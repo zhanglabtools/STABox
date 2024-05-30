@@ -1,0 +1,25 @@
+Technique	PMID	Title	Expression	SV genes
+Spatial transcriptomics	27365449	Visualization and analysis of gene expression in tissue sections by spatial transcriptomics	st_27365449.tar.gz	st_27365449_SVG.tar.gz
+Spatial transcriptomics	29021611	Spatial detection of fetal marker genes expressed at low level in adult human heart tissue	st_29021611.tar.gz	st_29021611_SVG.tar.gz
+Spatial transcriptomics	29925878	Spatial maps of prostate cancer transcriptomes reveal an unexplored landscape of heterogeneity	st_29925878.tar.gz	st_29925878_SVG.tar.gz
+Spatial transcriptomics	30154148	Spatially resolved transcriptomics enables dissection of genetic heterogeneity in stage III cutaneous malignant melanoma	st_30154148.tar.gz	st_30154148_SVG.tar.gz
+Spatial transcriptomics	30948552	Spatiotemporal dynamics of molecular pathology in amyotrophic lateral sclerosis	st_30948552.tar.gz	-
+Slide-seq	30923225	Slide-seq: a scalable technology for measuring genome-wide expression at high spatial resolution	slideseq_30923225.tar.gz	slideseq_30923225_SVG.tar.gz
+LCM-seq	24780627	A gene expression atlas of early craniofacial development	lcm_24780627.tar.gz	-
+LCM-seq	25344199	Topographical transcriptome mapping of the mouse medial ganglionic eminence by spatially resolved RNA-seq	lcm_25344199.tar.gz	lcm_25344199_SVG.tar.gz
+LCM-seq	27387371	Laser capture microscopy coupled with Smart-seq2 for precise spatial transcriptomic profiling	lcm_27387371.tar.gz	-
+LCM-seq	30270040	Spatial reconstruction of single enterocytes uncovers broad zonation along the intestinal villus axis	lcm_30270040.tar.gz	-
+seqFISH	27764670	In situ transcription profiling of single cells reveals spatial organization of cells in the mouse hippocampus	seqfish_27764670.tar.gz	seqfish_27764670_SVG.tar.gz
+seqFISH	30371680	Identification of spatially associated subpopulations by combining scRNAseq and sequential fluorescence in situ hybridization data	seqfish_30371680.tar.gz	-
+seqFISH	30911168	Transcriptome-scale super-resolved imaging in tissues by RNA seqFISH+	seqfish_30911168.tar.gz	seqfish_30911168_SVG.tar.gz
+MERFISH	30385464	Molecular, spatial, and functional single-cell profiling of the hypothalamic preoptic region	merfish_30385464.tar.gz	merfish_30385464_SVG.tar.gz
+Liver single cell zonation	28166538	Single-cell spatial reconstruction reveals global division of labour in the mammalian liver	liverzonation_28166538.tar.gz	-
+Liver single cell zonation	30222169	Paired-cell sequencing enables spatial gene expression mapping of liver endothelial cells	liverzonation_30222169.tar.gz	-
+Geo-seq	27003939	Spatial Transcriptome for the Molecular Annotation of Lineage Fates and Cell Identity in Mid-gastrula Mouse Embryo	geoseq_27003939.tar.gz	geoseq_27003939_SVG.tar.gz
+Tomo-seq	23028969	Transcriptome tomography for brain analysis in the web-accessible anatomical space	tomoseq_23028969.tar.gz	-
+Tomo-seq	23951250	Sequencing mRNA from cryo-sliced drosophila embryos to determine genome-wide spatial patterns of gene expression	tomoseq_23951250.tar.gz	-
+Tomo-seq	25417113	Genome-wide RNA tomography in the zebrafish embryo	tomoseq_25417113.tar.gz	-
+Tomo-seq	26748692	Spatially resolved genome-wide transcriptional profiling identifies BMP signaling as essential regulator of zebrafish cardiomyocyte regeneration	tomoseq_26748692.tar.gz	-
+Tomo-seq	28724751	Tomo-seq identifies SOX9 as a key regulator of cardiac fibrosis during ischemic injury	tomoseq_28724751.tar.gz	-
+Tomo-seq	29400650	Spatially resolved RNA-sequencing of the embryonic heart identifies a role for Wnt/¦Â-catenin signaling in autonomic control of heart rate	tomoseq_29400650.tar.gz	-
+Tomo-seq	30416013	Spatial transcriptomics of C. elegans males and hermaphrodites identifies sex-specific differences in gene expression patterns	tomoseq_30416013.tar.gz
