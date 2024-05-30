@@ -2,7 +2,7 @@
 
 STABox is a one-stop platform for spatial transcriptomics data that provide a unified data processing pipeline, versatile data analysis modules, and interactive visualization. It integrates a suite of advanced analysis tools based on graph neural networks. STABox supports interactive 2D/3D visualization of spatial transcriptomics data, simplifying the generation and refinement of publication-ready high-quality images. STABox is extensible, allowing for seamless integration with various analysis methods to facilitate comprehensive downstream analysis of spatial transcriptomics data. 
 
-![image-20240529151225098](STABox_overview.png)
+![image-20240529151225098](/STABox_overview.png)
 
 Folder structure: （请按照最新的文件组织结构更新下面的内容）
 
