@@ -4,17 +4,18 @@ STABox is a one-stop platform for spatial transcriptomics data that provide a un
 
 ![image-20240529151225098](/STABox_overview.png)
 
-Folder structure: （请按照最新的文件组织结构更新下面的内容）
+Folder structure: 
 
 ```
 stabox
 ├─src
 │  └─stabox
-│      ├─config
 │      ├─dataset
 │      ├─extension
 │      ├─model
-│      ├─preprocessing
+│      ├─module_3D
+│      ├─pl
+│      ├─pp
 │      └─view
 └─tests
 ```
@@ -23,10 +24,10 @@ stabox
 - `dataset`: save the code for loading data. All loading functions should return an `AnnData` object with spatial information in `.obsm['spatial']`.
 - `model`: save the model code, including `STAgate`, `STAligner` and `STAMarker`. 
 All methods should be inherited from `BaseModelMixin` in [`_mixin.py`](./src/stabox/model/_mixin.py).
-- `preprocessing`: save the preprocessing code, all preporcessing functions should take `AnnData` as input and return `AnnData` as output.
+- `module_3D`: save the converted 3D data for subsequent interactive visualization of 3D data. 
+- `pl`: save the result image output after model training.
+- `pp`: save the preprocessing code, all preporcessing functions should take `AnnData` as input and return `AnnData` as output.
 - `view`: save the visualization code for gui.
--  `pl`: save the code for plotting, ideally all plotting functions should take `AnnData` as input and return plotted figure as output.
--  
 
 ## Installation
 
@@ -72,7 +73,7 @@ python -m stabox.view.app
 
 If run successfully, you will launch the following GUI:
 
-![image-20240529204657589](D:\software\STABox\STABox_GUI.png)
+![image-20240529204657589](/STABox_GUI.png)
 
 
 
