@@ -77,15 +77,20 @@ If run successfully, you will launch the following GUI:
 
 
 
-https://stabox-tutorial.readthedocs.io/en/latest/
+## Tutorials
+
+Step-by-step jupyter tutorials are included in https://stabox-tutorial.readthedocs.io/en/latest/ to show how to use the python library of STABox.
+
+We also provide a video demo to show the key steps in running the GUI of STABox[here](https://drive.google.com/drive/folders/1Hd5HqJsekoZ_0BBkuDIjolSAhsRAdy6y?usp=drive_link).
+The test dataset download is available by clicking [here](https://drive.google.com/drive/folders/1qaULEZ7gpc32A7L9-d-Vgo3_Pxx5ri04?usp=drive_link).
+3D visualization datasets can be obtained [here](https://drive.google.com/drive/folders/13L2hB8gIZwI9vq_xyM6SG4CaLi_lNjN6?usp=drive_link)(note that the downloaded visualization datasets need to be saved in the 'view' folder)
 
 
 
 
+## Contact
 
-## Support
-
-If you have any questions, please feel free to contact us longquanlu99@163.com. 
+We are continuously updating and improving the software. If you have any questions or suggestions, please feel free to contact us longquanlu99@163.com. 
 
 
 
