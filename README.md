@@ -37,7 +37,7 @@ First clone the repository.
 
 ```
 git clone https://github.com/zhanglabtools/STABox.git
-cd STABox-main
+cd STABox
 ```
 
 It's recommended to create a separate conda environment for running STABox:
@@ -67,7 +67,7 @@ Other required packages are listed in **STABox_env.yaml**.
 ##### Run STABox toolkit
 
 ```
-cd STABox-main\src
+cd STABox\src
 python -m stabox.view.app
 ```
 
