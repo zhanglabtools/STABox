@@ -1,12 +1,7 @@
 import random
-import re
 import subprocess
 import warnings
 import sys
-
-# from concurrent.futures import ThreadPoolExecutor
-# from typing import Callable
-# from tqdm import tqdm
 import matplotlib
 import tkinter as tk
 import cv2
@@ -34,6 +29,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap import Style
 from pathlib import Path
 import threading
+import concurrent.futures
 import queue
 import shutil
 
@@ -213,6 +209,22 @@ class STABox(ttk.Frame):
 
         self.photoimages = []
         self.GUI()
+        self.load_setting()
+    
+    def load_setting(self):
+        path = "../Renv_setting.yaml"
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                yaml_data = yaml.safe_load(f)
+            os.environ["R_HOME"] = yaml_data["R_HOME"]
+            os.environ["R_USER"] = yaml_data["R_USER"]
+            messagebox.showinfo(
+                        "Settings Loaded",
+                        f'''R_HOME has been set to: \n {yaml_data["R_HOME"]} \nR_USER has been set to:  {os.environ["R_USER"]}''',
+                    )
+        else:
+            messagebox.showerror("Error", "Make sure the YAML file exists! Or You can set it manually in the setting.")
+
 
     def GUI(self):
         # imgpath = 'VIEW/assets'
@@ -1688,16 +1700,6 @@ class STABox(ttk.Frame):
         )
         self.setvar("scroll-message", self._value)
 
-        path = "../Renv_setting.yaml"
-        if os.path.exists(path):
-            with open(path, "r") as f:
-                yamlData = yaml.safe_load(f)
-            os.environ["R_HOME"] = yamlData["R_HOME"]
-            os.environ["R_USER"] = yamlData["R_USER"]
-        else:
-            Messagebox.show_error(
-                title="Warning", message="please setting R environ first!"
-            )
 
     def Cluster_analysis(self):
         if self.method_flag == "STAGATE":
@@ -1858,19 +1860,55 @@ class STABox(ttk.Frame):
         self.pb.stop()
         self.pb["value"] = 100
         self.setvar("prog-message", "Cluster analysis run over!")
+        self.setvar("End-time", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        EndTime = datetime.now().replace(microsecond=0)
+        self.setvar("total-time-cost", EndTime - self.StartTime)
+
+    def run_cluster_analysis(self):
+        try:
+            self.Cluster_analysis()
+        finally:
+            self.is_running = False
+
+    def task_done(self, future):
+        # 处理任务完成后的清理工作
+        exception = future.exception()
+        if exception:
+            messagebox.showerror("Error", f"Cluster analysis failed: {exception}")
 
     def Cluster_analysis_thread(self):
-        print(self.model_train_flag)
-        # temp
-        # self.model_train_flag = True
+        # 弹出确认对话框
+        confirm = messagebox.askyesno(
+            title="GroundTruth Check",
+            message="Ensure the file contains the GroundTruth information, do you want to continue?",
+        )
+        if confirm:
+            self.label_files_exit = True
+
+        if not hasattr(self, "executor"):
+            # 初始化线程池，最大线程数设为1，确保同一时间只有一个线程执行任务
+            self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+
+        if not hasattr(self, "is_running"):
+            self.is_running = False
+
+        if self.is_running:
+            messagebox.showinfo("Warning", "Cluster analysis is already running.")
+            return
+        print("model_train_flag: ", self.model_train_flag)
         if self.model_train_flag:
             # self.result_flag = True
             self.pb.start()
+            self.setvar("End-time", "")
+            self.setvar("total-time-cost", "")
             self.setvar(
                 "prog-message", f"{self.method_flag}: cluster analysis underway!!"
             )
-            T = threading.Thread(target=self.Cluster_analysis)
-            T.start()
+            self.setvar("prog-time-started", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            self.StartTime = datetime.now().replace(microsecond=0)
+            self.is_running = True
+            future = self.executor.submit(self.run_cluster_analysis)
+            future.add_done_callback(self.task_done)
 
     def data_download_GUI(self):
         self.path_load_flag = False
@@ -2201,8 +2239,21 @@ class STABox(ttk.Frame):
     def get_trained_file_path(self):
         self.update_idletasks()
         self.trained_file_path = filedialog.askopenfilename()
-        print(f"trained_file_path is {self.trained_file_path}")
-        self.setvar("load", self.trained_file_path)
+        if not self.trained_file_path:  # 如果用户取消文件选择
+            print("No file selected.")
+            return
+            # 弹出确认对话框
+        confirm = messagebox.askyesno(
+            title="Confirm File Import",
+            message="Ensure the imported file has been trained, or unexpected results may occur. Continue?",
+        )
+        if confirm:
+            self.model_train_flag = True
+            print(f"trained_file_path is {self.trained_file_path}")
+            self.setvar("load", self.trained_file_path)
+        else:
+            print("File import cancelled.")
+            return
 
     def Select_files(self):
         files_show = ttk.Toplevel(self.bus_frm)
@@ -2639,10 +2690,19 @@ class STABox(ttk.Frame):
         self.Data_load_toplevel.protocol("WM_DELETE_WINDOW", on_closing)
 
     def Restart(self):
-        self.master.quit()
-        self.master.destroy()
-        python = sys.executable
-        subprocess.Popen([python] + sys.argv)
+        # 弹出确认对话框
+        if messagebox.askyesno(
+            "Confirm Restart",
+            "Are you sure you want to restart? Please save your work.",
+        ):
+            messagebox.showinfo(
+                "Restarting", "The application is restarting. Please wait..."
+            )
+            self.master.quit()
+            self.master.destroy()
+            python = sys.executable
+            module_name = "stabox.view.app"
+            subprocess.Popen([python, "-m", module_name])
 
     def Preprocess(self):
         self.path_load_flag = False
@@ -2997,13 +3057,8 @@ class STABox(ttk.Frame):
                 from matplotlib import pyplot as plt
 
                 plt.rcParams["figure.figsize"] = (3, 3)
-                path = (
-                    test_file_path
-                    + "/figures/"
-                    + self.method_flag
-                    + "_"
-                    + self.data_type
-                )
+                path = os.path.join(test_file_path, "figures", f"{self.method_flag}_{self.data_type}")
+                print("label_files_exit:", self.label_files_exit)
                 if self.label_files_exit:
                     sc.pl.spatial(
                         adata,
@@ -3345,12 +3400,21 @@ class STABox(ttk.Frame):
                     self.result_images = ttk.Label(self.show_frame, image=image_list[i])
                     self.result_images.grid(row=i // 3, column=i % 3, sticky=W, pady=0)
 
-            fig_path = (
-                test_file_path + "/figures/" + self.method_flag + "_" + self.data_type
-            )
-            if not os.path.isdir(fig_path):
-                os.mkdir(fig_path)
-
+            fig_path = os.path.join(test_file_path, "figures", f"{self.method_flag}_{self.data_type}")
+            # 创建目录，如果目录已存在，清空目录中的所有文件
+            if os.path.exists(fig_path):
+                # 清空目录中的所有文件
+                for filename in os.listdir(fig_path):
+                    file_path = os.path.join(fig_path, filename)
+                    try:
+                        if os.path.isfile(file_path) or os.path.islink(file_path):
+                            os.unlink(file_path)  # 删除文件或符号链接
+                        elif os.path.isdir(file_path):
+                            shutil.rmtree(file_path)  # 删除文件夹及其内容
+                    except Exception as e:
+                        print(f'Failed to delete {file_path}. Reason: {e}')
+            else:
+                os.makedirs(fig_path, exist_ok=True)  # 如果目录不存在，创建目录
             adata = self.result_queue.get()
             self.result_queue.put(adata)
             # adata = mclust_R(adata, used_obsm='STAGATE', num_cluster=self.Mcluster_num)
@@ -7145,16 +7209,29 @@ class STABox(ttk.Frame):
 
     def settings(self):
         settingbox = ttk.Toplevel(title="settings")
-        settingbox.geometry("300x100+100+100")
+
+        # 获取父窗口大小以计算居中位置
+        parent_width = self.master.winfo_width()
+        parent_height = self.master.winfo_height()
+        # 计算居中的X和Y偏移量
+        x_offset = (parent_width - 300) // 2
+        y_offset = (parent_height - 100) // 2
+        # 设置窗口的几何属性，使其居中
+        settingbox.geometry("300x100+{}+{}".format(x_offset, y_offset))
         settingbox.lift()
-        ttk.Label(settingbox, text="R_HOME").grid(row=0, sticky="w")
-        ttk.Label(settingbox, text="R_USER").grid(row=1, sticky="w")
+
+        # 创建设置表单
+        ttk.Label(settingbox, text="R_HOME").grid(row=0, column=0, sticky="w")
+        ttk.Label(settingbox, text="R_USER").grid(row=1, column=0, sticky="w")
+
+        R_HOME_var = tk.StringVar()
+        R_USER_var = tk.StringVar()
         R_HOME_box = ttk.Entry(
-            settingbox, textvariable="R_HOME", validate="focusout", width=30
+            settingbox, textvariable=R_HOME_var, validate="focusout", width=30
         )
         R_HOME_box.grid(row=0, column=1)
         R_USER_box = ttk.Entry(
-            settingbox, textvariable="R_USER", validate="focusout", width=30
+            settingbox, textvariable=R_USER_var, validate="focusout", width=30
         )
         R_USER_box.grid(row=1, column=1)
 
@@ -7162,31 +7239,58 @@ class STABox(ttk.Frame):
             path = "../Renv_setting.yaml"
             if os.path.exists(path):
                 with open(path, "r") as f:
-                    yamlData = yaml.safe_load(f)
-                os.environ["R_HOME"] = yamlData["R_HOME"]
-                os.environ["R_USER"] = yamlData["R_USER"]
-                self.setvar("R_HOME", yamlData["R_HOME"])
-                self.setvar("R_USER", yamlData["R_USER"])
-                settingbox.destroy()
+                    yaml_data = yaml.safe_load(f)
+                os.environ["R_HOME"] = yaml_data["R_HOME"]
+                os.environ["R_USER"] = yaml_data["R_USER"]
+                R_HOME_var.set(yaml_data.get("R_HOME", ""))
+                R_USER_var.set(yaml_data.get("R_USER", ""))
+
+                # 延时1200毫秒后显示信息框
+                settingbox.after(
+                    1200,
+                    lambda: (
+                        messagebox.showinfo(
+                            "Settings Loaded",
+                            f"R_HOME has been set to: \n {R_HOME_var.get()} \nR_USER has been set to:  {R_USER_var.get()}",
+                        ),
+                        settingbox.destroy(),
+                    ),
+                )
             else:
-                Messagebox.show_error("Make sure yaml exist!", "Error!")
+                messagebox.showerror("Error", "Make sure the YAML file exists!")
                 settingbox.destroy()
 
-        load_setting_button = ttk.Button(
-            settingbox, text="Load yaml", width=9, command=load_setting
-        )
-        load_setting_button.grid(row=2, column=0)
+        def save_data():
+            # 验证输入
+            if not R_HOME_var.get() or not R_USER_var.get():
+                messagebox.showwarning(
+                    "Input Error", "R_HOME and R_USER cannot be empty. Please fill in both fields."
+                )
+                return
+            
+            os.environ["R_HOME"] = R_HOME_var.get()
+            os.environ["R_USER"] = R_USER_var.get()
 
-        def get_data():
-            os.environ["R_HOME"] = R_HOME_box.get()
-            os.environ["R_USER"] = R_USER_box.get()
-            setting = {"R_HOME": R_HOME_box.get(), "R_USER": R_USER_box.get()}
+            setting = {"R_HOME": R_HOME_var.get(), "R_USER": R_USER_var.get()}
             with open("../Renv_setting.yaml", "w") as f:
                 yaml.dump(setting, f)
-            settingbox.destroy()
+            # 延时1200毫秒后显示信息框
+            settingbox.after(
+                1200,
+                lambda: (
+                    messagebox.showinfo(
+                        "Settings saved", "Save Renv-seting.yaml file successfully"
+                    ),
+                    settingbox.destroy(),
+                ),
+            )
 
-        check_button = ttk.Button(settingbox, text="Confirm", width=8, command=get_data)
-        check_button.grid(row=2, column=1)
+        load_button = ttk.Button(
+            settingbox, text="Load yaml", width=9, command=load_setting
+        )
+        load_button.grid(row=2, column=0)
+        save_button = ttk.Button(settingbox, text="Confirm", width=8, command=save_data)
+        save_button.grid(row=2, column=1)
 
 
 class CollapsingFrame(ttk.Frame):
