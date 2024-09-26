@@ -48,6 +48,8 @@ conda create -n env_STABox python=3.8
 
 #activate your environment
 conda activate env_STABox
+详细步骤见同级的README_DETAIL.md文件
+
 ```
 
 
