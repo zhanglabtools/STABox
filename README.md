@@ -48,6 +48,8 @@ conda create -n env_STABox python=3.8
 
 #activate your environment
 conda activate env_STABox
+详细步骤见同级的README_DETAIL.md文件
+
 ```
 
 
@@ -103,4 +105,3 @@ We are continuously updating and improving the software. If you have any questio
 Q: How to install **PyG** from whl files?
 
 A: Please download the whl files from https://pytorch-geometric.com/whl/index.html. Note that the version of python, torch, PyG, and cuda should match. 
-
