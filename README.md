@@ -105,3 +105,7 @@ We are continuously updating and improving the software. If you have any questio
 Q: How to install **PyG** from whl files?
 
 A: Please download the whl files from https://pytorch-geometric.com/whl/index.html. Note that the version of python, torch, PyG, and cuda should match. 
+
+Q: Would it be more convenient if the dependencies for STABOX could be packaged into Docker images?
+
+A: Yes, using Docker containers can simplify environment configuration and dependency management. Here are the basic steps to create a Docker image:[here](/Docker.md)
